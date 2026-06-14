@@ -1545,6 +1545,8 @@ const DEFAULT_QUEST = {
      Chaque clé = un id encodé dans un QR. `actions` = mêmes actions que le moteur.
      `once:true` → carte utilisable une seule fois. `requires` → condition (evalCondition). */
   scan_targets:{
+    test:{ label:"Carte — Test", actions:[
+      { type:"show_banner", title:"Test", text:"test ok", on_complete:[] } ] },
     potion:{ label:"Carte — Fiole trouvée", actions:[
       { type:"roll_potions", dice:[10], banner_title:"Une fiole oubliée",
         banner_text:"Vous débouchez la carte d'un pouce sale.\n\n{rolls}\n\nElle rejoint la besace du groupe." } ] },
