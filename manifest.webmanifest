@@ -1,0 +1,16 @@
+{
+  "name": "Le Sillage des Morts",
+  "short_name": "Le Sillage",
+  "description": "JDR narratif à base de cartes — scan de QR codes physiques, jouable hors-ligne.",
+  "lang": "fr",
+  "start_url": "index_V2.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#04060a",
+  "theme_color": "#070a10",
+  "icons": [
+    { "src": "lib/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "lib/icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,485 @@
+{
+  "quest_id": "le_sillage_des_morts",
+  "title": "Le Sillage des Morts",
+  "sub": "Un conte de cartes, de boue et de noms oubliés",
+  "scan_targets": {
+    "potion": { "label": "Carte — Fiole trouvée", "actions": [
+      { "type": "roll_potions", "dice": [10], "banner_title": "Une fiole oubliée",
+        "banner_text": "Vous débouchez la carte d'un pouce sale.\n\n{rolls}\n\nElle rejoint la besace du groupe." } ] },
+    "souvenir_arbre": { "label": "Carte — L'Arbre Dolmire", "once": true, "actions": [
+      { "type": "set_flag", "flag": "found_dolmire_genealogy", "value": true },
+      { "type": "add_memory", "text": "L'arbre généalogique des Dolmire — un nom récent : « Y. Dolmire »." },
+      { "type": "show_banner", "title": "Un nom à l'encre fraîche", "text": "La carte révèle un arbre généalogique. Tout en bas, récent : <b>« Y. Dolmire »</b>.", "on_complete": [] } ] },
+    "cle_doree": { "label": "Carte — La Clé Dorée", "once": true, "actions": [
+      { "type": "set_flag", "flag": "golden_key", "value": true },
+      { "type": "add_memory", "text": "La clé dorée, arrachée au mécanisme des trois planches." },
+      { "type": "show_banner", "title": "La Clé Dorée", "style": "danger", "text": "La clé glacée tombe dans votre paume.", "on_complete": [] } ] },
+    "embuscade": { "label": "Carte — Embuscade au jardin", "requires": "!flags.jardin_done", "actions": [
+      { "type": "set_flag", "flag": "jardin_done", "value": true },
+      { "type": "start_combat", "id": "jardin" } ] }
+  },
+  "potion_table": [
+    { "max": 2, "name": "Potion de Vitesse" },
+    { "max": 4, "name": "Potion d'Initiative" },
+    { "max": 6, "name": "Potion de Résistance" },
+    { "max": 8, "name": "Potion de Soins" },
+    { "max": 9, "name": "Potion Multi-usage" },
+    { "max": 10, "name": "Potion Multiplicative" }
+  ],
+  "monsters": {
+    "fossoyeur": {
+      "representation": "humain",
+      "range": 1,
+      "has_potion": true,
+      "init_roll": "1D6",
+      "basic_attack": {
+        "label": "ATTAQUE NORMALE",
+        "cost": 0,
+        "text": "Difficulté de parade : <b>6</b>. Attaque au corps à corps (portée 1)."
+      },
+      "special_attack": {
+        "cost": 2,
+        "is_attack": true,
+        "label": "BERSERK",
+        "text": "Difficulté de parade : <b>6</b>.\nLe fossoyeur ajoute <b>1D10 aux dégâts</b> : lancez le D10 physique — chaque dé montrant sa face inflige 1 dégât supplémentaire."
+      }
+    },
+    "esprit": {
+      "representation": "fantome",
+      "range": 3,
+      "has_potion": false,
+      "init_roll": "1D6",
+      "spawn_skull_on_death": true,
+      "basic_attack": {
+        "label": "ATTAQUE NORMALE",
+        "cost": 0,
+        "text": "Difficulté de parade : <b>6</b>. Attaque spectrale (portée 3)."
+      },
+      "special_attack": {
+        "question": "{name} prépare un sortilège — les cibles sont-elles ALIGNÉES sur la table ?",
+        "options": [
+          {
+            "label": "Oui, alignées",
+            "attack": {
+              "label": "MAGIE RECTILIGNE",
+              "cost": 3,
+              "is_attack": true,
+              "text": "Difficulté : <b>7</b>.\nLe rayon traverse la ligne : <b>1 PV</b> au 1er joueur traversé, <b>2 PV</b> au 2ème, <b>3 PV</b> au 3ème."
+            }
+          },
+          {
+            "label": "Non",
+            "attack": {
+              "label": "EXPLOSION DE ZONE",
+              "cost": 2,
+              "is_attack": true,
+              "text": "Difficulté : <b>7</b>.\n<b>1 dégât de zone</b> et chaque cible touchée est <b>repoussée de 3 cases</b> sur le plateau physique."
+            }
+          }
+        ]
+      }
+    },
+    "yarek": {
+      "representation": "humain",
+      "range": 2,
+      "has_potion": false,
+      "init_roll": "1D6+2",
+      "flash_on_damage": true,
+      "basic_attack": {
+        "label": "ATTAQUE NORMALE",
+        "cost": 0,
+        "text": "Difficulté de parade : <b>6</b>. Lame d'ombre (portée 2)."
+      },
+      "special_attack": {
+        "question": "Y a-t-il 2 joueurs ou plus à distance ≤ 2 de Yarek ?",
+        "options": [
+          {
+            "label": "Oui",
+            "attack": {
+              "label": "ATTAQUE DE ZONE",
+              "cost": 2,
+              "is_attack": true,
+              "spawn_skull": true,
+              "text": "Difficulté : <b>6</b>.\nYarek frappe tous les joueurs à distance 2 avec un <b>bonus de 1D10</b> aux dégâts (chaque face = 1 dégât)."
+            }
+          },
+          {
+            "label": "Non",
+            "attack": {
+              "label": "VOL DE VIE",
+              "cost": 3,
+              "is_attack": true,
+              "spawn_skull": true,
+              "life_steal": true,
+              "text": "Difficulté : <b>7</b> — Yarek a <b>+2 à son jet</b>.\nSi l'attaque réussit physiquement : la cible perd <b>1 PV</b>, et Yarek se régénère (l'app lui ajoutera <b>+2 PV</b>)."
+            }
+          }
+        ]
+      }
+    },
+    "sbire": {
+      "representation": "humain",
+      "range": 1,
+      "has_potion": true,
+      "init_roll": "1D6",
+      "basic_attack": {
+        "label": "ATTAQUE NORMALE",
+        "cost": 0,
+        "text": "Difficulté de parade : <b>6</b>. Attaque au corps à corps (portée 1)."
+      },
+      "special_attack": {
+        "cost": 2,
+        "is_attack": true,
+        "label": "BERSERK",
+        "text": "Difficulté de parade : <b>6</b>.\nLe sbire ajoute <b>1D10 aux dégâts</b> : chaque dé physique montrant sa face inflige 1 dégât supplémentaire."
+      }
+    }
+  },
+  "combats": {
+    "jardin": {
+      "id": "jardin",
+      "name": "Combat I — Le Jardin des Fossoyeurs",
+      "monsters": [
+        { "tpl": "fossoyeur", "name": "Fossoyeur 1", "hp": 10, "cell": "C3" },
+        { "tpl": "fossoyeur", "name": "Fossoyeur 2", "hp": 10, "cell": "F3" }
+      ],
+      "intro": [
+        {
+          "text": "Deux fossoyeurs lâchent leurs pelles et se tournent vers vous, la mâchoire pendante, les yeux pleins de terre.\n\n<b>Fossoyeur 1</b> : 10 PV — <b>Fossoyeur 2</b> : 10 PV\nChacun porte une <b>Potion de Vie</b> (bue sous 5 PV : +3 PV, coût 2 init)."
+        },
+        {
+          "condition": "flags.garden_surprise",
+          "text": "\n\n⚡ <b>Rappel : les joueurs ont +2 d'Initiative</b> (sortie précipitée) — à appliquer sur table."
+        }
+      ],
+      "on_victory": [
+        {
+          "type": "show_banner",
+          "title": "Le jardin se tait",
+          "text": "Les fossoyeurs s'effondrent dans leurs propres fosses. Dans leurs besaces de toile, des fioles tintent…\n\nButin : <b>2 potions aléatoires</b> (2D10).",
+          "on_complete": [
+            { "type": "end_combat_cleanup" },
+            {
+              "type": "roll_potions",
+              "dice": [10, 10],
+              "banner_title": "Butin du Jardin",
+              "banner_text": "{rolls}",
+              "on_complete": [
+                { "type": "go_node", "target": "node4" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "esprits": {
+      "id": "esprits",
+      "name": "Combat II — Les Esprits de la Crypte",
+      "monsters": [
+        { "tpl": "esprit", "name": "Esprit 1", "hp": 8, "cell": "C5" },
+        { "tpl": "esprit", "name": "Esprit 2", "hp": 8, "cell": "F5" }
+      ],
+      "intro": [
+        {
+          "text": "La fumée des dalles se condense en deux silhouettes translucides, aux visages d'eau trouble.\n\n<b>Esprit 1</b> : 8 PV (portée 3) — <b>Esprit 2</b> : 8 PV (portée 3)\n\n☠ <b>Mécanique de mort</b> : à la mort du premier esprit, un crâne spectral apparaît à sa position. Il explosera au prochain « Fin de Round » (2 PV de dégâts à toute cible ≤ 4 cases)."
+        }
+      ],
+      "on_victory": [
+        {
+          "type": "show_banner",
+          "title": "Le froid se dissipe",
+          "text": "Les esprits se dissolvent en volutes glacées. Le passage vers la porte de pierre est libre.",
+          "on_complete": [
+            { "type": "end_combat_cleanup" },
+            { "type": "go_node", "target": "node6" }
+          ]
+        }
+      ]
+    },
+    "finale": {
+      "id": "finale",
+      "name": "Combat Final — Yarek Dolmire",
+      "monsters": [
+        { "tpl": "yarek", "name": "Yarek Dolmire", "hp": 15, "cell": "D4" },
+        { "tpl": "sbire", "name": "Sbire", "hp": 10, "cell": "G6" }
+      ],
+      "intro": [
+        {
+          "condition": "flags.found_dolmire_genealogy",
+          "text": "« Tu connais mon nom gravé dans la pierre », siffle Yarek en dégainant une lame d'os. « Alors tu sais qu'on ne tue pas ce qui est déjà couché dans sa tombe. »",
+          "otherwise": "Yarek dégaine une lame d'os. « Vous auriez dû boire un dernier verre. La maison offrait. »"
+        },
+        {
+          "text": "\n\n<b>Yarek Dolmire</b> : 15 PV (portée 2, init D6+2) — <b>Sbire</b> : 10 PV\n\n⚡ <b>Flash</b> : à la première attaque qui inflige plus d'1 PV d'un coup à Yarek, il se téléporte instantanément vers le joueur le plus éloigné.\n☠ Chaque coup spécial de Yarek invoque un <b>crâne</b> (case D8 aléatoire) : il explose au « Fin de Round » suivant — 2 PV aux joueurs ≤ 3 cases, <b>+1 PV aux monstres</b> dans la zone."
+        }
+      ],
+      "on_victory": [
+        { "type": "end_combat_cleanup" },
+        { "type": "go_node", "target": "epilogue" }
+      ]
+    }
+  },
+  "nodes": {
+    "intro": {
+      "title": "Le Conteur",
+      "desc": [
+        {
+          "text": "La pluie martèle la toile au-dessus de vous. Sur une table de bois vermoulu, une bougie crache sa lumière ambrée. Des mains squelettiques, sorties de l'ombre d'une capuche, battent un paquet de cartes craquelées.\n\n« Asseyez-vous », souffle le Conteur. « La route vers l'Auberge du Sillage est longue, et les morts n'aiment pas les voyageurs démunis. Tendez la main… voyons ce que les fioles veulent bien vous donner. »"
+        }
+      ],
+      "cards": [
+        {
+          "label": "Tendre la main vers les fioles",
+          "sub": "Tirage : 2D10",
+          "actions": [
+            {
+              "type": "roll_potions",
+              "dice": [10, 10],
+              "banner_title": "Les fioles du Conteur",
+              "banner_text": "Les dés d'os roulent sur le bois…\n\n{rolls}\n\nLes deux potions rejoignent la besace du groupe.",
+              "on_complete": [
+                {
+                  "type": "deal_cards",
+                  "cards": [
+                    {
+                      "label": "Prendre la route",
+                      "sub": "Vers l'auberge",
+                      "actions": [
+                        { "type": "go_node", "target": "node1" }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "node1": {
+      "title": "Nuit 1 — L'Auberge du Sillage",
+      "desc": [
+        {
+          "text": "La boue vous aspire les bottes depuis des heures quand la bâtisse émerge enfin de la brume : une auberge tordue, adossée à un cimetière dont les stèles penchent comme des dents gâtées. Une unique fenêtre luit d'un jaune malade.\n\nL'enseigne grince : « Au Sillage ». Sous la pluie, la porte de chêne noir vous attend."
+        }
+      ],
+      "cards": [
+        {
+          "label": "Frapper et attendre",
+          "sub": "Politesse prudente",
+          "actions": [
+            { "type": "set_flag", "flag": "wait_at_door", "value": true },
+            { "type": "go_node", "target": "node2" }
+          ]
+        },
+        {
+          "label": "Entrée fracassante",
+          "sub": "Pousser la porte d'un coup d'épaule",
+          "actions": [
+            { "type": "set_flag", "flag": "smash_door", "value": true },
+            { "type": "shake_camera", "amount": 0.35 },
+            { "type": "go_node", "target": "node2" }
+          ]
+        }
+      ]
+    },
+    "node2": {
+      "title": "Nuit 1 — Yarek Dolmire, aubergiste",
+      "desc": [
+        {
+          "condition": "flags.smash_door",
+          "text": "La porte claque contre le mur et la salle entière sursaute — sauf l'homme derrière le comptoir. Grand, sec, le visage comme taillé à la serpe, il éclate d'un rire gras. « Voilà des clients comme je les aime ! Entrez, entrez, avant que la nuit ne vous boive. »",
+          "otherwise": "Vous frappez trois coups. Un long silence, puis des pas traînants. La porte s'ouvre sur un homme grand et sec, au visage comme taillé à la serpe, qui vous jauge d'un œil calme. « Des voyageurs polis… c'est rare, par ici. Entrez donc. »"
+        },
+        {
+          "text": "\n\n« Yarek Dolmire, pour vous servir. La chambre est en haut. La bière est en bas. Choisissez votre poison. »\n\nL'escalier craque dans l'ombre. Quelque chose, dans cette maison, sent le vieux secret."
+        }
+      ],
+      "cards": [
+        {
+          "label": "Prendre le temps de boire",
+          "sub": "Trinquer avec Yarek",
+          "actions": [
+            { "type": "set_flag", "flag": "drank_with_yarek", "value": true },
+            { "type": "add_memory", "text": "Vous avez bu avec Yarek — il parle beaucoup, mais jamais de lui." },
+            {
+              "type": "show_banner",
+              "title": "La tournée de Yarek",
+              "text": "La bière est épaisse et amère. Yarek raconte les noyés de la rivière, les récoltes mortes, les cloches qu'on entend parfois sonner sous la terre.\n\nQuand vous parlez du cimetière, son sourire ne bouge pas. Mais ses yeux, eux, se ferment un peu.\n\n<i>Flag activé : drank_with_yarek</i>",
+              "on_complete": [
+                { "type": "go_node", "target": "node3" }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Fouiller discrètement la maison",
+          "sub": "En montant se coucher",
+          "actions": [
+            { "type": "set_flag", "flag": "found_dolmire_genealogy", "value": true },
+            { "type": "add_memory", "text": "L'arbre généalogique des Dolmire — un nom récent au bas : « Y. Dolmire »." },
+            {
+              "type": "show_banner",
+              "title": "Le grenier des Dolmire",
+              "text": "Pendant que vos compagnons occupent l'aubergiste, vous vous glissez à l'étage. Derrière une tenture moisie : un cadre poussiéreux.\n\nUn <b>arbre généalogique</b>. La lignée Dolmire, sur des siècles. Les dates de mort s'arrêtent il y a deux cents ans…\n\n…mais tout en bas, à l'encre fraîche, un dernier nom : <b>« Y. Dolmire »</b>.\n\n<i>Flag activé : found_dolmire_genealogy</i>",
+              "on_complete": [
+                { "type": "go_node", "target": "node3" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "node3": {
+      "title": "Nuit 1 — Le Réveil",
+      "desc": [
+        {
+          "text": "Un fracas de métal vous arrache au sommeil. Par la lucarne de la chambre, vous voyez le jardin derrière l'auberge : des silhouettes voûtées y creusent la terre fraîche à coups de pelle. Des fossoyeurs. Mais aucune lanterne, aucun chant — seulement le bruit humide de la terre retournée… et un sac de toile qui remue.\n\nVos armes sont au pied du lit. Chaque seconde compte."
+        }
+      ],
+      "cards": [
+        {
+          "label": "Se préparer à sortir",
+          "sub": "Tirage D10 : une potion offerte",
+          "actions": [
+            {
+              "type": "roll_potions",
+              "dice": [10],
+              "banner_title": "Préparatifs dans le noir",
+              "banner_text": "Vous bouclez les sangles, vérifiez les lames, avalez une gorgée amère.\n\n{rolls}\n\nMais le temps perdu vous coûte l'effet de surprise.",
+              "on_complete": [
+                { "type": "start_combat", "id": "jardin" }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Sortir précipitamment",
+          "sub": "+2 Initiative (géré sur table)",
+          "actions": [
+            { "type": "set_flag", "flag": "garden_surprise", "value": true },
+            { "type": "add_memory", "text": "Sortie précipitée au jardin : +2 Initiative au premier combat (sur table)." },
+            {
+              "type": "show_banner",
+              "title": "Dans le sillage de la nuit",
+              "text": "Vous dévalez l'escalier quatre à quatre et surgissez dans le jardin avant que les fossoyeurs n'aient le temps de lever leurs pelles.\n\n<b>⚡ Les joueurs s'octroient +2 d'Initiative</b> sur leurs fiches physiques pour ce combat.\n\n<i>Flag activé : garden_surprise</i>",
+              "on_complete": [
+                { "type": "start_combat", "id": "jardin" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "node4": {
+      "title": "Le Passage Secret — La Pierre Gravée",
+      "desc": [
+        {
+          "text": "Derrière le cabanon du jardin, la terre fraîchement remuée dissimulait un escalier de pierre. Il s'enfonce sous le cimetière.\n\nAu bas des marches, une stèle couverte de mousse barre le passage. Vous grattez le lichen : des dizaines de noms y sont gravés, sur des générations entières."
+        },
+        {
+          "condition": "flags.found_dolmire_genealogy",
+          "text": "\n\nUn frisson vous parcourt l'échine. Tout en bas de la liste, à peine plus récent que les autres, un nom que vous avez déjà vu à l'encre fraîche dans le grenier :\n\n« Y. DOLMIRE »\n\nL'aubergiste. Son nom est gravé parmi les morts — depuis bien plus longtemps que ne vit un homme.",
+          "otherwise": "\n\nDes noms anciens, érodés, sans signification pour vous. Le dernier de la liste semble à peine plus récent. Vous passez votre chemin, vaguement mal à l'aise sans savoir pourquoi."
+        },
+        {
+          "text": "\n\nLa stèle pivote. Derrière elle, le passage se sépare en deux."
+        }
+      ],
+      "cards": [
+        {
+          "label": "Sentier escarpé humide",
+          "sub": "Une odeur croupie monte des profondeurs",
+          "actions": [
+            { "type": "set_flag", "flag": "path_left", "value": true },
+            { "type": "go_node", "target": "node5" }
+          ]
+        },
+        {
+          "label": "Couloir aux toiles d'araignées",
+          "sub": "Des chuchotements, un froid mordant",
+          "actions": [
+            { "type": "set_flag", "flag": "path_right", "value": true },
+            { "type": "go_node", "target": "node5" }
+          ]
+        }
+      ]
+    },
+    "node5": {
+      "title": "L'Énigme des Trois Planches",
+      "desc": [
+        {
+          "condition": "flags.path_left",
+          "text": "Le sentier escarpé vous mène, bottes trempées, dans une salle basse où l'eau suinte des murs. L'odeur croupie est presque solide.",
+          "otherwise": "Le couloir aux toiles d'araignées débouche sur une salle basse. Les chuchotements se sont tus d'un coup, comme une bouche qu'on couvre."
+        },
+        {
+          "text": "\n\nAu fond, une niche scellée abrite une clé dorée, luisant derrière un mécanisme de bois. Trois planches gravées y sont enchâssées, chacune ornée d'un symbole. Au-dessus, une inscription rongée par le temps attend d'être comprise."
+        }
+      ],
+      "cards": [
+        {
+          "label": "Examiner les trois planches",
+          "sub": "Résoudre l'énigme",
+          "actions": [
+            {
+              "type": "open_riddle",
+              "on_solve": [
+                { "type": "set_flag", "flag": "golden_key", "value": true },
+                { "type": "add_memory", "text": "La clé dorée, arrachée au mécanisme des trois planches." },
+                {
+                  "type": "show_banner",
+                  "title": "La Clé Dorée",
+                  "style": "danger",
+                  "text": "Les trois planches s'alignent avec un claquement sec. Le mécanisme s'ouvre comme une mâchoire et la <b>clé dorée</b> tombe dans votre paume, glacée.\n\nDerrière vous, le froid s'épaissit. Les dalles du sol se mettent à fumer…",
+                  "on_complete": [
+                    { "type": "start_combat", "id": "esprits" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "node6": {
+      "title": "La Porte de Pierre",
+      "desc": [
+        {
+          "text": "La clé dorée tourne dans la serrure d'une porte de pierre massive. Le battant glisse sans un bruit, comme huilé par des siècles de soin.\n\nUne crypte. Des cierges verts. Et au centre, vous attendant près d'un autel couvert de noms, l'aubergiste.\n\n« Vous voilà enfin », dit Yarek Dolmire."
+        },
+        {
+          "condition": "flags.found_dolmire_genealogy",
+          "text": "\n\nVous serrez vos armes : vous savez. L'arbre généalogique. La stèle. « Combien de temps, Dolmire ? » demandez-vous. « Depuis combien de temps es-tu mort ? »\n\nSon sourire s'élargit, trop large. « Voilà des clients comme je les aime. Perspicaces… et déjà dans mon sillage. »",
+          "otherwise": "\n\n« Vous ne comprenez toujours pas, n'est-ce pas ? » Son sourire s'élargit, trop large, tandis qu'une silhouette de sbire se détache de l'ombre derrière lui. « Peu importe. Le sillage vous expliquera. »"
+        }
+      ],
+      "cards": [
+        {
+          "label": "Affronter Yarek Dolmire",
+          "sub": "Le combat final",
+          "actions": [
+            { "type": "start_combat", "id": "finale" }
+          ]
+        }
+      ]
+    },
+    "epilogue": {
+      "title": "Épilogue — Le Sillage",
+      "desc": [
+        {
+          "text": "Yarek Dolmire s'effondre contre son autel, et pour la première fois, son visage taillé à la serpe paraît simplement las.\n\n« Vous ne comprenez pas… » Un filet noir coule de ses lèvres. « L'auberge, le cimetière, la crypte… personne ne les trouve par hasard. On n'y arrive que porté par le courant. »\n\nIl lève vers vous des yeux pleins d'une pitié sincère.\n\n« Le Sillage ne précède pas la mort, voyageurs. Il la suit. Vous étiez déjà morts. »\n\nLa bougie s'éteint. Sur la table de bois vermoulu, des mains squelettiques rassemblent les cartes — et parmi elles, désormais, quatre cartes neuves portent vos visages."
+        }
+      ],
+      "cards": [
+        {
+          "label": "Reprendre la route",
+          "sub": "Rejouer le conte",
+          "actions": [
+            { "type": "reload_game" }
+          ]
+        }
+      ]
+    }
+  }
+}

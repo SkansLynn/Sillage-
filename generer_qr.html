@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Sillage des Morts — Générateur de cartes QR</title>
+<script src="lib/qrcode.min.js"></script>
+<style>
+  :root{ --gold:#c9a35a; --bone:#d8cdb4; --ink:#070a10; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#0c0f15;color:var(--bone);font-family:Georgia,'Times New Roman',serif;padding:26px;}
+  h1{font-size:24px;color:var(--gold);letter-spacing:1px;margin:0 0 4px;}
+  .lead{opacity:.8;max-width:760px;line-height:1.5;margin:0 0 18px;font-size:15px;}
+  .lead code{background:#1b2230;color:#e8c87a;padding:1px 6px;border-radius:4px;}
+  .toolbar{margin:0 0 22px;display:flex;gap:12px;flex-wrap:wrap;}
+  button{font-family:inherit;font-size:14px;cursor:pointer;padding:9px 18px;border-radius:8px;
+    border:1px solid var(--gold);background:#1b2230;color:var(--bone);}
+  button.primary{background:linear-gradient(180deg,#e8c87a,#c9a35a);color:#1a140a;font-weight:bold;border-color:#f0dca0;}
+  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;}
+  .card{background:#fbf6ea;color:#1a140a;border:2px solid #1a140a;border-radius:12px;padding:14px;
+    text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;
+    box-shadow:0 6px 18px rgba(0,0,0,.4);}
+  .card .qr{background:#fff;padding:8px;border-radius:6px;}
+  .card .qr img,.card .qr canvas{display:block;}
+  .card .label{font-weight:bold;font-size:15px;line-height:1.2;}
+  .card .kind{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8a6a2a;}
+  .card .code{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#555;word-break:break-all;}
+  @media print{
+    body{background:#fff;color:#000;padding:0;}
+    h1,.lead,.toolbar{display:none;}
+    #grid{gap:8px;}
+    .card{box-shadow:none;break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+  <h1>Cartes QR — Le Sillage des Morts</h1>
+  <p class="lead">
+    Chaque carte encode <code>sdm:&lt;id&gt;</code>. Scannez-la dans le jeu (bouton <b>▣ Scanner une carte</b>)
+    pour déclencher l'action liée au moteur. Imprimez cette page, ou ajoutez/retirez des cartes en éditant
+    le tableau <code>CARDS</code> en bas du fichier. Préfixes : <code>node:</code> (aller à un lieu),
+    <code>combat:</code> (lancer un combat), ou un id de <code>scan_targets</code>.
+  </p>
+  <div class="toolbar">
+    <button class="primary" onclick="window.print()">🖨 Imprimer</button>
+    <span style="opacity:.7;align-self:center;">Astuce : papier épais + plastification = vraies cartes de jeu.</span>
+  </div>
+  <div id="grid"></div>
+
+<script>
+/* === Liste des cartes à générer ===
+   code   : ce qui suit « sdm: » dans le QR
+   label  : titre lisible imprimé sur la carte
+   kind   : étiquette de catégorie (cosmétique) */
+const CARDS = [
+  // Lieux (raccourcis de nœuds — scénario embarqué V2)
+  { code:"node:node_route",     label:"La Route Noyée",            kind:"Lieu" },
+  { code:"node:node_carrefour", label:"Le Portail des Trois Planches", kind:"Lieu" },
+  { code:"node:node_auberge",   label:"L'Auberge du Sillage",      kind:"Lieu" },
+  { code:"node:node_verite",    label:"Le Reflet Absent",          kind:"Lieu" },
+  { code:"node:node_enfant",    label:"L'Enfant sans Visage",      kind:"Lieu" },
+  { code:"node:node_seuil",     label:"Le Seuil",                  kind:"Lieu" },
+  // Combat
+  { code:"combat:revolte",      label:"La Révolte des Convives",   kind:"Combat" },
+  // Cartes d'effet (scan_targets)
+  { code:"potion",     label:"Fiole trouvée",        kind:"Objet" },
+  { code:"medaillon",  label:"Le Médaillon du Noyé", kind:"Objet" },
+  { code:"enfant_vu",  label:"L'Enfant sans Visage", kind:"Indice" },
+  { code:"pacte",      label:"Le Pacte",             kind:"Événement" },
+  { code:"revolte",    label:"La Révolte des Convives", kind:"Événement" }
+];
+
+const grid = document.getElementById('grid');
+CARDS.forEach(c => {
+  const payload = "sdm:" + c.code;
+  const card = document.createElement('div');
+  card.className = 'card';
+  const qr = document.createElement('div');
+  qr.className = 'qr';
+  card.appendChild(qr);
+  new QRCode(qr, { text: payload, width:160, height:160, correctLevel: QRCode.CorrectLevel.M });
+  const lbl = document.createElement('div'); lbl.className='label'; lbl.textContent=c.label;
+  const knd = document.createElement('div'); knd.className='kind'; knd.textContent=c.kind;
+  const cod = document.createElement('div'); cod.className='code'; cod.textContent=payload;
+  card.appendChild(lbl); card.appendChild(knd); card.appendChild(cod);
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>

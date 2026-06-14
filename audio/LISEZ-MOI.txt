@@ -1,0 +1,36 @@
+DOSSIER DE DOUBLAGE (voix-off MP3)
+===================================
+
+Dépose ici tes fichiers .mp3. Deux façons de les lier :
+
+1) AUTOMATIQUE (le plus simple) — nomme le fichier comme l'id du nœud :
+     audio/intro.mp3
+     audio/node1.mp3
+     audio/node2.mp3
+     audio/node3.mp3
+     audio/node4.mp3
+     audio/node5.mp3
+     audio/node6.mp3
+     audio/epilogue.mp3
+   Le jeu joue automatiquement le bon fichier quand la carte/le nœud s'ouvre.
+   Aucune modification du JSON nécessaire.
+
+2) MANUEL (pour forcer un fichier précis, ou doubler une bannière) —
+   dans le fichier .json, ajoute un champ "audio" :
+
+   - Sur un nœud :
+       "intro": {
+         "title": "Le Conteur",
+         "audio": "audio/ma_voix_intro.mp3",
+         "desc": [ ... ]
+       }
+
+   - Sur une action show_banner :
+       { "type": "show_banner", "title": "...", "text": "...",
+         "audio": "audio/banniere1.mp3" }
+
+Notes :
+- Si un fichier est absent, le jeu continue sans bruit (pas d'erreur bloquante).
+- Quand une nouvelle carte/voix démarre, la précédente s'arrête automatiquement.
+- Pour désactiver l'auto-nommage et ne lire QUE les "audio" du JSON,
+  mets AUDIO_AUTO=false en haut du script (section DOUBLAGE) dans index.html.
